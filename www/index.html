@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Send Encrypted Message</title>
+  </head>
+  <body>
+    <form>
+      <label for="message">Message</label>
+      <input type="text" name="message" autocomplete="off" />
+      <input type="submit" value="Send" />
+    </form>
+    <script>
+      async function sendMessage(message) {
+        // Fetch the public key from the server
+        const publicKeyResponse = await fetch(
+          "http://localhost:3000/publicKey.jwk"
+        );
+        const publicKey = await publicKeyResponse.json();
+
+        // Encode the message as a buffer
+        const encoder = new TextEncoder();
+        const messageBuffer = encoder.encode(message);
+
+        // The first part of the code uses the window.crypto.subtle.importKey method to import the public key as a CryptoKey object. The key is provided as a JWK object in publicKey and the importKey method specifies the type of key as RSA-OAEP with SHA-256 hashing. The false parameter specifies that the key is not extractable and the "encrypt" parameter indicates that the key can only be used for encryption.
+        const publicKeyBuffer = await window.crypto.subtle.importKey(
+          "jwk",
+          publicKey,
+          { name: "RSA-OAEP", hash: { name: "SHA-256" } },
+          false,
+          ["encrypt"]
+        );
+
+        // The second part of the code uses the window.crypto.subtle.encrypt method to encrypt the message using the imported public key. The method specifies the encryption algorithm as RSA-OAEP and provides the public key CryptoKey object publicKeyBuffer as the key to use for encryption. The message to be encrypted is provided as a messageBuffer parameter.
+        const encryptedBuffer = await window.crypto.subtle.encrypt(
+          { name: "RSA-OAEP" },
+          publicKeyBuffer,
+          messageBuffer
+        );
+
+        // Convert the encrypted buffer to base64 format
+        const encryptedArray = Array.from(new Uint8Array(encryptedBuffer));
+        const encryptedBase64 = btoa(String.fromCharCode(...encryptedArray));
+
+        // Send the encrypted message to the server
+        const headers = new Headers({
+          "Content-Type": "application/text",
+        });
+
+        const req = new Request("http://localhost:3000", {
+          method: "POST",
+          headers,
+        });
+
+        await fetch(req, {
+          body: encryptedBase64,
+        });
+      }
+
+      const form = document.querySelector("form");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        // Get the message from the form input, or use a default value
+        const message = form.querySelector("input").value || "Hello World";
+
+        // Send the encrypted message to the server
+        await sendMessage(message);
+      });
+    </script>
+  </body>
+</html>

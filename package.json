@@ -1,0 +1,18 @@
+{
+  "name": "encrypted-messages",
+  "version": "1.0.0",
+  "description": "A Node.js demo for encrypting and decrypting messages using RSA encryption.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "encryption",
+    "security",
+    "rsa",
+    "messages"
+  ],
+  "author": "Francisco Gargiulo",
+  "license": "ISC",
+  "dependencies": {}
+}

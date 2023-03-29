@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Upload File</title>
+  </head>
+  <body>
+    <form
+      action="http://localhost:3000"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <input type="file" name="file" />
+      <input type="submit" value="Upload" />
+    </form>
+    <script>
+      const form = document.querySelector("form");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const file = document.querySelector('input[type="file"]').files[0];
+        const filename = file.name;
+
+        const fileReader = new FileReader();
+
+        fileReader.onload = async () => {
+          const headers = new Headers({
+            "Content-Type": "application/octet-stream",
+            "X-Filename": filename,
+          });
+
+          const req = new Request("http://localhost:3000", {
+            method: "PUT",
+            headers,
+          });
+
+          const response = await fetch(req, {
+            body: fileReader.result,
+          });
+
+          console.log(`Server response: ${response.status}`);
+        };
+
+        fileReader.readAsArrayBuffer(file);
+      });
+    </script>
+  </body>
+</html>
