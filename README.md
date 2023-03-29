@@ -1,4 +1,4 @@
-# Send Encrypted Message
+# Encrypted Message
 
 This repository contains client and server-side code for sending an encrypted message between two parties. The client-side code is written in HTML and JavaScript, and the server-side code is Send Encrypted Message: A Node.js app for secure message exchange between two parties. Client-side uses RSA-OAEP encryption, server-side uses private key decryption. Open-source under ISC License.s code, you will need to have Node.js installed on your computer. If you don't have it already, you can download it from the [official website](https://nodejs.org/en/).
 
